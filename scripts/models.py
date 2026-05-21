@@ -13,6 +13,7 @@ class Entry(BaseModel):
     first_appears: int
     tags: list[str]
     definitions: list[Definition]
+    forms: list[str] = []
 
     @field_validator("tags")
     @classmethod
@@ -20,6 +21,16 @@ class Entry(BaseModel):
         if not v:
             raise ValueError("tags must be non-empty")
         return v
+
+    @model_validator(mode="after")
+    def validate_forms_no_duplicate_term(self) -> "Entry":
+        term_lower = self.term.lower()
+        for form in self.forms:
+            if form.lower() == term_lower:
+                raise ValueError(
+                    f"forms must not duplicate term; got {form!r}"
+                )
+        return self
 
     @model_validator(mode="after")
     def validate_definitions_order_and_first_appears(self) -> "Entry":

@@ -51,6 +51,14 @@ VALID_ENTRY_CASES = [
         make_entry(tags=["character", "replicant"]),
         id="multiple-tags",
     ),
+    pytest.param(
+        make_entry(forms=["GUPPIs", "guppy"]),
+        id="forms-present-no-duplicate-term",
+    ),
+    pytest.param(
+        make_entry(),
+        id="forms-absent-defaults-empty",
+    ),
 ]
 
 
@@ -68,6 +76,16 @@ INVALID_ENTRY_CASES = [
         make_entry(tags=[]),
         "tags must be non-empty",
         id="empty-tags",
+    ),
+    pytest.param(
+        make_entry(forms=["GUPPI"]),
+        "forms must not duplicate term",
+        id="form-duplicates-term-exact",
+    ),
+    pytest.param(
+        make_entry(forms=["guppi"]),
+        "forms must not duplicate term",
+        id="form-duplicates-term-case-insensitive",
     ),
     pytest.param(
         make_entry(

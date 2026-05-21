@@ -1,6 +1,8 @@
 """Tests for find_candidates.py — lemmatization and candidate scoring."""
 
-from scripts.find_candidates import score_candidates, tokenize
+import yaml
+
+from scripts.find_candidates import load_existing_terms, score_candidates, tokenize
 
 
 def test_tokenize_lemmatizes_common_forms():
@@ -75,3 +77,26 @@ def test_score_candidates_filters_existing_terms():
     terms = [c["term"] for c in candidates]
     assert "replicant" not in terms
     assert "guppi" in terms
+
+
+def test_score_candidates_filters_by_existing_forms():
+    """A lemma matching a value from an existing entry's forms list is excluded."""
+    pairs = [("gorilloids", "gorilloids"), ("guppi", "guppi")]
+    candidates = score_candidates(pairs, existing_terms={"gorilloids"})
+    terms = [c["term"] for c in candidates]
+    assert "gorilloids" not in terms
+    assert "guppi" in terms
+
+
+def test_load_existing_terms_includes_forms(tmp_path):
+    """Suppression set includes both term and all values from forms."""
+    dict_file = tmp_path / "dictionary.yaml"
+    dict_file.write_text(
+        yaml.dump({
+            "entries": [{"term": "gorilloid", "forms": ["gorilloids", "gorilloid-like"]}]
+        })
+    )
+    terms = load_existing_terms(dict_file)
+    assert "gorilloid" in terms
+    assert "gorilloids" in terms
+    assert "gorilloid-like" in terms

@@ -52,7 +52,12 @@ def tokenize(text: str) -> list[tuple[str, str]]:
 def load_existing_terms(dictionary_path: Path) -> set[str]:
     with dictionary_path.open() as f:
         data = yaml.safe_load(f)
-    return {entry["term"].lower() for entry in data.get("entries", [])}
+    suppression: set[str] = set()
+    for entry in data.get("entries", []):
+        suppression.add(entry["term"].lower())
+        for form in entry.get("forms", []):
+            suppression.add(form.lower())
+    return suppression
 
 
 def score_candidates(
