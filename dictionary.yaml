@@ -1,0 +1,57 @@
+# Bobiverse Dictionary — source of truth
+#
+# Schema:
+#   entries:
+#     - term: string              # display form, case-sensitive (required)
+#       first_appears: int        # book number where term first appears (required)
+#       tags: [string, ...]       # at least one; canonical: character, replicant, ai,
+#                                 #   alien, faction, technology, location, acronym,
+#                                 #   concept, ship, weapon
+#       definitions:              # at least one element (required)
+#         - safe_after_book: int  # reader finished this book; no spoilers after this point
+#           text: string          # definition shown to reader
+
+entries:
+  - term: "GUPPI"
+    first_appears: 1
+    tags: [ai, acronym]
+    definitions:
+      - safe_after_book: 1
+        text: >
+          General Unit Primary Peripheral Intelligence. The AI assistant
+          assigned to each Bob replicant's ship, providing navigation,
+          ship management, and general computational support.
+
+  - term: "Milo"
+    first_appears: 1
+    tags: [character, replicant]
+    definitions:
+      - safe_after_book: 1
+        text: >
+          A replicant of Bob, instantiated in 2157. Focuses on
+          exploration and is among the first generation of Bobs.
+      - safe_after_book: 2
+        text: >
+          A replicant of Bob, instantiated in 2157. Killed during
+          the Pav evacuation when his ship is destroyed by a
+          Medeiros drone.
+
+  - term: "Deltans"
+    first_appears: 1
+    tags: [alien, faction, character]
+    definitions:
+      - safe_after_book: 1
+        text: >
+          A pre-technological humanoid species native to Delta Eridani 4,
+          observed and studied by Bob replicants. Hunter-gatherer society
+          with developing tool use and proto-language.
+      - safe_after_book: 2
+        text: >
+          A pre-technological humanoid species native to Delta Eridani 4.
+          Bob replicants intervene to protect them from extinction as their
+          population crashes due to predation and resource competition.
+      - safe_after_book: 3
+        text: >
+          A pre-technological humanoid species native to Delta Eridani 4.
+          Eventually develop agriculture and more complex social structures
+          with indirect guidance from Bob replicants over generations.
