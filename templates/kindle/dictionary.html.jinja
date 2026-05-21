@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:idx="https://kindlegen.s3.amazonaws.com/AmazonKindlePublishingGuidelines.pdf"
+      xmlns:mbp="https://kindlegen.s3.amazonaws.com/AmazonKindlePublishingGuidelines.pdf">
+<head>
+  <meta charset="UTF-8"/>
+  <title>Bobiverse Dictionary — Book {{ target_book_label }}</title>
+</head>
+<body>
+<mbp:frameset>
+{% for entry in entries %}
+  <idx:entry name="default" scriptable="yes">
+    <idx:orth value="{{ entry.term }}">{{ entry.term }}</idx:orth>
+    <p>{{ entry.definition }}</p>
+  </idx:entry>
+{% endfor %}
+</mbp:frameset>
+</body>
+</html>

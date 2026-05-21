@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://www.idpf.org/2007/opf"
+         version="2.0"
+         unique-identifier="uid">
+  <metadata xmlns:dc="http://purl.org/dc/elements/1.1/">
+    <dc:identifier id="uid">bobiverse-dict-kindle-book-{{ target_book }}</dc:identifier>
+    <dc:title>Bobiverse Dictionary — Book {{ target_book_label }}</dc:title>
+    <dc:language>en</dc:language>
+    <dc:creator>Bobiverse Dictionary Builder</dc:creator>
+    <x-metadata>
+      <DictionaryInLanguage>en</DictionaryInLanguage>
+      <DictionaryOutLanguage>en</DictionaryOutLanguage>
+    </x-metadata>
+  </metadata>
+  <manifest>
+    <item id="content"
+          href="dictionary.html"
+          media-type="text/x-oeb1-document"/>
+  </manifest>
+  <spine>
+    <itemref idref="content"/>
+  </spine>
+</package>

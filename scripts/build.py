@@ -13,6 +13,7 @@ from pydantic import ValidationError
 
 from scripts.models import Dictionary, Entry, select_definition
 from scripts.epub_builder import build_epub
+from scripts.kindle_builder import build_kindle
 
 
 def load_dictionary(path: Path) -> Dictionary:
@@ -38,8 +39,8 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Bobiverse Dictionary build tool")
     parser.add_argument("--validate-only", action="store_true", help="Validate dictionary.yaml and exit")
     parser.add_argument("--target-book", metavar="N|all", help="Build output for book N (or 'all')")
-    parser.add_argument("--format", choices=["csv", "epub", "both"], default="both",
-                        help="Output format (default: both)")
+    parser.add_argument("--format", choices=["csv", "epub", "kindle", "all"], default="all",
+                        help="Output format (default: all)")
     args = parser.parse_args()
 
     dict_path = Path(__file__).parent.parent / "dictionary.yaml"
@@ -71,14 +72,18 @@ def main() -> None:
             stem = f"bobiverse-book-{raw}"
 
         fmt = args.format
-        if fmt in ("csv", "both"):
+        if fmt in ("csv", "all"):
             csv_path = dist_dir / f"{stem}.csv"
             build_csv(dictionary.entries, target_book, csv_path)
             print(f"Wrote {csv_path}")
-        if fmt in ("epub", "both"):
+        if fmt in ("epub", "all"):
             epub_path = dist_dir / f"{stem}.epub"
             build_epub(dictionary.entries, target_book, epub_path)
             print(f"Wrote {epub_path}")
+        if fmt in ("kindle", "all"):
+            kindle_path = dist_dir / f"{stem}.kindle.zip"
+            build_kindle(dictionary.entries, target_book, kindle_path)
+            print(f"Wrote {kindle_path}")
 
 
 if __name__ == "__main__":
