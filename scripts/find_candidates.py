@@ -1,17 +1,27 @@
 """Find candidate terms for the Bobiverse Dictionary from local EPUBs."""
 
 import argparse
-import re
-from collections import Counter
+from collections import Counter, defaultdict
 from pathlib import Path
 
 import ebooklib
+import spacy
 import yaml
 from bs4 import BeautifulSoup
 from ebooklib import epub
 from wordfreq import word_frequency
 
 EPSILON = 1e-9
+
+_nlp = None
+
+
+def _get_nlp():
+    global _nlp
+    if _nlp is None:
+        _nlp = spacy.load("en_core_web_sm", disable=["parser", "ner"])
+        _nlp.max_length = 10_000_000
+    return _nlp
 
 
 def extract_text(epub_path: Path) -> str:
@@ -23,12 +33,20 @@ def extract_text(epub_path: Path) -> str:
     return " ".join(parts)
 
 
-def tokenize(text: str) -> list[str]:
-    text = text.lower()
-    text = re.sub(r"[^\w\s]", "", text, flags=re.UNICODE)
-    text = re.sub(r"[0-9_]", "", text)
-    tokens = re.split(r"\s+", text)
-    return [t for t in tokens if len(t) >= 2]
+def tokenize(text: str) -> list[tuple[str, str]]:
+    """Return (lemma, surface_form) pairs for alphabetic tokens >= 2 chars."""
+    nlp = _get_nlp()
+    doc = nlp(text)
+    result = []
+    for token in doc:
+        if not token.is_alpha:
+            continue
+        surface = token.lower_
+        lemma = token.lemma_.lower()
+        if len(lemma) < 2:
+            continue
+        result.append((lemma, surface))
+    return result
 
 
 def load_existing_terms(dictionary_path: Path) -> set[str]:
@@ -37,28 +55,37 @@ def load_existing_terms(dictionary_path: Path) -> set[str]:
     return {entry["term"].lower() for entry in data.get("entries", [])}
 
 
-def score_candidates(tokens: list[str], existing_terms: set[str]) -> list[dict]:
-    counts = Counter(tokens)
-    total = sum(counts.values())
+def score_candidates(
+    token_pairs: list[tuple[str, str]], existing_terms: set[str]
+) -> list[dict]:
+    lemma_counts: Counter[str] = Counter(lemma for lemma, _ in token_pairs)
+    total = sum(lemma_counts.values())
+
+    forms_counts: dict[str, Counter[str]] = defaultdict(Counter)
+    for lemma, surface in token_pairs:
+        forms_counts[lemma][surface] += 1
 
     candidates = []
-    for term, count in counts.items():
-        if term in existing_terms:
+    for lemma, count in lemma_counts.items():
+        if lemma in existing_terms:
             continue
-        if len(term) <= 1:
+        if len(lemma) <= 1:
             continue
-        if term.isnumeric():
+        if lemma.isnumeric():
             continue
 
         corpus_freq = count / total
-        baseline_freq = word_frequency(term, "en")
+        baseline_freq = word_frequency(lemma, "en")
         score = corpus_freq / (baseline_freq + EPSILON)
+
+        forms = [form for form, _ in forms_counts[lemma].most_common()]
 
         candidates.append(
             {
-                "term": term,
+                "term": lemma,
                 "score": score,
                 "corpus_count": count,
+                "forms": forms,
                 "definitions": [],
             }
         )
@@ -108,16 +135,16 @@ def main() -> None:
     existing_terms = load_existing_terms(args.dictionary)
     print(f"Loaded {len(existing_terms)} existing terms from {args.dictionary}")
 
-    all_tokens: list[str] = []
+    all_pairs: list[tuple[str, str]] = []
     for epub_path in epubs:
         text = extract_text(epub_path)
-        tokens = tokenize(text)
-        print(f"{epub_path.name}: {len(tokens):,} tokens")
-        all_tokens.extend(tokens)
+        pairs = tokenize(text)
+        print(f"{epub_path.name}: {len(pairs):,} tokens")
+        all_pairs.extend(pairs)
 
-    print(f"Total tokens: {len(all_tokens):,}")
+    print(f"Total tokens: {len(all_pairs):,}")
 
-    candidates = score_candidates(all_tokens, existing_terms)
+    candidates = score_candidates(all_pairs, existing_terms)
     top = candidates[: args.top]
 
     with args.output.open("w") as f:

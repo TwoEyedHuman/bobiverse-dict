@@ -184,7 +184,12 @@ uv --version && echo "✓ uv found" || echo "✗ install uv: https://docs.astral
 
 # Install dependencies and confirm
 uv sync
-uv run python -c "import ebooklib, lxml, wordfreq, pydantic; print('✓ deps ok')"
+uv run python -c "import ebooklib, lxml, wordfreq, pydantic, spacy; print('✓ deps ok')"
+
+# spaCy language model (one-time, required for find_candidates.py)
+uv run python -m spacy validate 2>/dev/null | grep -q en_core_web_sm \
+  && echo "✓ spaCy model found" \
+  || (uv run python -m spacy download en_core_web_sm && echo "✓ spaCy model installed")
 
 # Schema validates
 uv run python scripts/build.py --validate-only && echo "✓ dictionary.yaml valid"
@@ -446,12 +451,65 @@ Each story is one Claude session. Keep them tight.
 
 ---
 
+#### Story 3.3 — Lemmatization & Duplicate Candidate Collapse
+
+**Context:** Stories 3.1 and 3.2 complete. `find_candidates.py` produces correct output but inflected forms of the same root appear as separate candidates (e.g. `gorilloid` and `gorilloids`).
+
+**Assumptions:**
+- `spacy` and the `en_core_web_sm` model are available (`uv add spacy && uv run python -m spacy download en_core_web_sm`)
+- Existing `tokenize()` function is the right place to add lemmatization
+
+**Tasks:**
+- Add `spacy` to project dependencies via `uv add spacy`
+- Document `python -m spacy download en_core_web_sm` as a one-time setup step in the Pre-Flight Checklist
+- Replace the existing `tokenize()` function with a lemmatizing equivalent using `spacy`'s `en_core_web_sm` pipeline — output is lemmas, not raw tokens
+- Collapsed forms are tracked: `score_candidates()` accumulates `corpus_count` across all inflected forms that share a lemma
+- `candidates.yaml` output gains a `forms` field listing every distinct surface form seen in the corpus for that lemma, sorted by frequency descending
+- Update `tests/test_candidates.py` — assert that inflected variants of a known root collapse to one entry; assert `forms` list is present and non-empty
+
+**Out of Scope:** Changes to `dictionary.yaml` schema, `build.py`, or any existing dictionary entries. Do not filter against `dictionary.yaml` `forms` fields yet — that is Story 3.4.
+
+**Acceptance Criteria:**
+- [ ] `uv run python scripts/find_candidates.py --top 50` → no two entries share the same lemma root (spot-check `gorilloid` / `gorilloids` specifically)
+- [ ] Each entry in `candidates.yaml` has a `forms` list with at least one element
+- [ ] `corpus_count` reflects combined frequency across all forms, not just the lemma form
+- [ ] `uv run pytest tests/test_candidates.py` → all pass
+- [ ] Re-running produces identical output (spaCy lemmatization is deterministic)
+
+---
+
+#### Story 3.4 — Schema `forms` Field & Dictionary Filter Update
+
+**Context:** Story 3.3 complete. `candidates.yaml` now includes a `forms` field. `dictionary.yaml` entries do not yet have a `forms` field, so the existing-terms filter in `find_candidates.py` only matches on `term` and would miss entries where a variant form is already defined under a different headword.
+
+**Assumptions:**
+- At least one entry in `dictionary.yaml` could be matched by a variant form (e.g. `term: gorilloid` should suppress `gorilloids` from candidates)
+
+**Tasks:**
+- Add optional `forms` field to the `Entry` Pydantic model in `scripts/models.py` — `list[str]`, default empty
+- Update `scripts/build.py` schema validation: if `forms` is present, no form may duplicate the `term` value itself
+- Update `find_candidates.py` existing-terms filter to build a suppression set from both `term` and all `forms` values across all entries in `dictionary.yaml`
+- Update `tests/test_schema.py` — assert `forms` field is optional; assert duplicate `term`-in-`forms` is rejected
+- Update `tests/test_candidates.py` — assert that a term present in an existing entry's `forms` list does not appear in candidates output
+
+**Out of Scope:** Retroactively populating `forms` on existing `dictionary.yaml` entries — that happens organically during Story 4.1 as entries are authored. No changes to output formats (CSV, EPUB, Kindle).
+
+**Acceptance Criteria:**
+- [ ] `uv run pytest` → all tests pass including new `forms` cases
+- [ ] `make validate` passes on current `dictionary.yaml` (no breakage from schema addition)
+- [ ] Add a test entry to `dictionary.yaml` with a `forms` list; re-run `find_candidates.py` → those forms absent from `candidates.yaml`
+- [ ] Remove the test entry; `candidates.yaml` returns to previous state
+
+---
+
 ### EPIC 3 Integration Gate
 
 - [ ] `uv run python scripts/find_candidates.py --top 100` → `candidates.yaml` with 100 entries
-- [ ] All entries have blank `definitions` stubs ready to fill in
-- [ ] No overlap with existing `dictionary.yaml` terms
-- [ ] Re-running after adding entries to `dictionary.yaml` → previously-added terms no longer appear in candidates
+- [ ] No two entries share the same lemma root — spot-check for known inflected pairs
+- [ ] Each entry has a populated `forms` list
+- [ ] No entry in `candidates.yaml` has a `term` or `form` already in `dictionary.yaml`
+- [ ] Re-running after adding entries to `dictionary.yaml` → previously-added terms (and their forms) no longer appear in candidates
+- [ ] `uv run pytest` → all tests pass
 
 ---
 
@@ -463,19 +521,26 @@ Each story is one Claude session. Keep them tight.
 
 #### Story 4.1 — Initial Content Pass
 
-**Context:** Build pipeline and candidate finder complete.
+**Context:** Epic 3 complete including lemmatization. `candidates.yaml` produces clean, deduplicated candidates with a `forms` field. `dictionary.yaml` schema supports an optional `forms` field on entries.
+
+**Assumptions:**
+- `find_candidates.py --top 100` has been run and `candidates.yaml` is present
+- Candidate terms have been reviewed; top candidates are plausible Bobiverse-specific terms
 
 **Tasks:**
-- Run `find_candidates.py --top 100`, review output, fill in definitions for top candidates
-- Aim for ≥ 50 entries with real definitions in `dictionary.yaml`
+- Run `find_candidates.py --top 100` and review `candidates.yaml`
+- For each entry promoted to `dictionary.yaml`: write at least one definition; copy `forms` from `candidates.yaml` if the entry has meaningful inflected variants worth preserving
+- Aim for ≥ 50 entries with real definitions
 - Ensure at least 10 entries have multi-tier definitions (book 1 vs book 2+)
 - Run `make build-all` and verify outputs
 
-**Out of Scope:** Perfect coverage; this is a first pass.
+**Out of Scope:** Perfect coverage; this is a first pass. Do not spend time on entries where the definition is unclear — leave them in `candidates.yaml` for later.
 
 **Acceptance Criteria:**
 - [ ] `dictionary.yaml` has ≥ 50 entries with non-empty definitions
 - [ ] ≥ 10 entries have at least 2 definition tiers
+- [ ] Entries promoted from `candidates.yaml` have `forms` populated where relevant
+- [ ] Re-running `find_candidates.py` → promoted terms (and their forms) no longer appear in candidates
 - [ ] `make build-all` → all outputs produced without error
 - [ ] Spot-check: open `dist/book-1/bobiverse-book-1.epub` in calibre; at least 10 entries visible
 
