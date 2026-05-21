@@ -1,7 +1,6 @@
 """Build EPUB 3 dictionary from entries."""
 
 import zipfile
-from datetime import datetime, timezone
 from pathlib import Path
 
 from jinja2 import Environment, FileSystemLoader
@@ -39,19 +38,24 @@ def build_epub(entries: list[Entry], target_book: int, output_path: Path) -> Non
         "entries": rows,
         "target_book": target_book,
         "target_book_label": target_book_label,
-        "modified": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "modified": "1980-01-01T00:00:00Z",
     }
 
     content_opf = env.get_template("content.opf.jinja").render(**ctx)
     dictionary_xhtml = env.get_template("dictionary.xhtml.jinja").render(**ctx)
     toc_ncx = env.get_template("toc.ncx.jinja").render(**ctx)
 
+    _EPOCH = (1980, 1, 1, 0, 0, 0)
+
+    def _zi(name: str, compress_type: int = zipfile.ZIP_DEFLATED) -> zipfile.ZipInfo:
+        zi = zipfile.ZipInfo(name, date_time=_EPOCH)
+        zi.compress_type = compress_type
+        return zi
+
     with zipfile.ZipFile(output_path, "w", zipfile.ZIP_DEFLATED) as zf:
         # mimetype must be first entry, uncompressed, no extra fields
-        mime_info = zipfile.ZipInfo("mimetype")
-        mime_info.compress_type = zipfile.ZIP_STORED
-        zf.writestr(mime_info, "application/epub+zip")
-        zf.writestr("META-INF/container.xml", _CONTAINER_XML)
-        zf.writestr("OEBPS/content.opf", content_opf)
-        zf.writestr("OEBPS/dictionary.xhtml", dictionary_xhtml)
-        zf.writestr("OEBPS/toc.ncx", toc_ncx)
+        zf.writestr(_zi("mimetype", zipfile.ZIP_STORED), "application/epub+zip")
+        zf.writestr(_zi("META-INF/container.xml"), _CONTAINER_XML)
+        zf.writestr(_zi("OEBPS/content.opf"), content_opf)
+        zf.writestr(_zi("OEBPS/dictionary.xhtml"), dictionary_xhtml)
+        zf.writestr(_zi("OEBPS/toc.ncx"), toc_ncx)

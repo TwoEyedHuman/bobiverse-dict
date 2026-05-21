@@ -34,6 +34,13 @@ def build_kindle(entries: list[Entry], target_book: int, output_path: Path) -> N
     content_opf = env.get_template("content.opf.jinja").render(**ctx)
     dictionary_html = env.get_template("dictionary.html.jinja").render(**ctx)
 
+    _EPOCH = (1980, 1, 1, 0, 0, 0)
+
+    def _zi(name: str) -> zipfile.ZipInfo:
+        zi = zipfile.ZipInfo(name, date_time=_EPOCH)
+        zi.compress_type = zipfile.ZIP_DEFLATED
+        return zi
+
     with zipfile.ZipFile(output_path, "w", zipfile.ZIP_DEFLATED) as zf:
-        zf.writestr("content.opf", content_opf)
-        zf.writestr("dictionary.html", dictionary_html)
+        zf.writestr(_zi("content.opf"), content_opf)
+        zf.writestr(_zi("dictionary.html"), dictionary_html)

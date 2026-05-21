@@ -35,15 +35,35 @@ def build_csv(entries: list[Entry], target_book: int, output_path: Path) -> None
         writer.writerows(rows)
 
 
+ROOT = Path(__file__).parent.parent
+
+
+def build_target(entries: list[Entry], target_book: int, dir_name: str, stem: str, fmt: str) -> None:
+    dist_dir = ROOT / "dist" / dir_name
+    if fmt in ("csv", "all"):
+        path = dist_dir / f"{stem}.csv"
+        build_csv(entries, target_book, path)
+        print(f"Wrote {path}")
+    if fmt in ("epub", "all"):
+        path = dist_dir / f"{stem}.epub"
+        build_epub(entries, target_book, path)
+        print(f"Wrote {path}")
+    if fmt in ("kindle", "all"):
+        path = dist_dir / f"{stem}.kindle.zip"
+        build_kindle(entries, target_book, path)
+        print(f"Wrote {path}")
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Bobiverse Dictionary build tool")
     parser.add_argument("--validate-only", action="store_true", help="Validate dictionary.yaml and exit")
     parser.add_argument("--target-book", metavar="N|all", help="Build output for book N (or 'all')")
+    parser.add_argument("--all", action="store_true", help="Build all book targets (1..max first_appears) plus book-all")
     parser.add_argument("--format", choices=["csv", "epub", "kindle", "all"], default="all",
                         help="Output format (default: all)")
     args = parser.parse_args()
 
-    dict_path = Path(__file__).parent.parent / "dictionary.yaml"
+    dict_path = ROOT / "dictionary.yaml"
 
     try:
         dictionary = load_dictionary(dict_path)
@@ -56,34 +76,22 @@ def main() -> None:
     if args.validate_only:
         sys.exit(0)
 
-    if args.target_book:
+    if args.all:
+        max_book = max(e.first_appears for e in dictionary.entries)
+        for book_num in range(1, max_book + 1):
+            build_target(dictionary.entries, book_num, f"book-{book_num}", f"bobiverse-book-{book_num}", args.format)
+        build_target(dictionary.entries, 999, "book-all", "bobiverse-book-all", args.format)
+    elif args.target_book:
         raw = args.target_book
         if raw == "all":
-            target_book = 999
-            dist_dir = Path(__file__).parent.parent / "dist" / "book-all"
-            stem = "bobiverse-book-all"
+            build_target(dictionary.entries, 999, "book-all", "bobiverse-book-all", args.format)
         else:
             try:
-                target_book = int(raw)
+                book_num = int(raw)
             except ValueError:
                 print(f"Error: --target-book must be an integer or 'all', got {raw!r}", file=sys.stderr)
                 sys.exit(1)
-            dist_dir = Path(__file__).parent.parent / "dist" / f"book-{raw}"
-            stem = f"bobiverse-book-{raw}"
-
-        fmt = args.format
-        if fmt in ("csv", "all"):
-            csv_path = dist_dir / f"{stem}.csv"
-            build_csv(dictionary.entries, target_book, csv_path)
-            print(f"Wrote {csv_path}")
-        if fmt in ("epub", "all"):
-            epub_path = dist_dir / f"{stem}.epub"
-            build_epub(dictionary.entries, target_book, epub_path)
-            print(f"Wrote {epub_path}")
-        if fmt in ("kindle", "all"):
-            kindle_path = dist_dir / f"{stem}.kindle.zip"
-            build_kindle(dictionary.entries, target_book, kindle_path)
-            print(f"Wrote {kindle_path}")
+            build_target(dictionary.entries, book_num, f"book-{raw}", f"bobiverse-book-{raw}", args.format)
 
 
 if __name__ == "__main__":
