@@ -4,24 +4,13 @@ import argparse
 import sys
 from pathlib import Path
 
+# Ensure project root is on sys.path when run directly as a script.
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
 import yaml
-from pydantic import BaseModel, ValidationError
+from pydantic import ValidationError
 
-
-class Definition(BaseModel):
-    safe_after_book: int
-    text: str
-
-
-class Entry(BaseModel):
-    term: str
-    first_appears: int
-    tags: list[str]
-    definitions: list[Definition]
-
-
-class Dictionary(BaseModel):
-    entries: list[Entry]
+from scripts.models import Dictionary
 
 
 def load_dictionary(path: Path) -> Dictionary:
