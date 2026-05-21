@@ -4,8 +4,8 @@ import csv
 import pytest
 from pathlib import Path
 
-from scripts.models import Entry
-from scripts.build import select_definition, build_csv
+from scripts.models import Entry, select_definition
+from scripts.build import build_csv
 
 
 # ---------------------------------------------------------------------------

@@ -37,6 +37,15 @@ class Entry(BaseModel):
         return self
 
 
+def select_definition(entry: "Entry", target_book: int) -> str | None:
+    if entry.first_appears > target_book:
+        return None
+    safe = [d for d in entry.definitions if d.safe_after_book <= target_book]
+    if not safe:
+        return None
+    return safe[-1].text.strip()
+
+
 class Dictionary(BaseModel):
     entries: list[Entry]
 

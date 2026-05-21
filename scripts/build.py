@@ -11,22 +11,14 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 import yaml
 from pydantic import ValidationError
 
-from scripts.models import Dictionary, Entry
+from scripts.models import Dictionary, Entry, select_definition
+from scripts.epub_builder import build_epub
 
 
 def load_dictionary(path: Path) -> Dictionary:
     with path.open() as f:
         raw = yaml.safe_load(f)
     return Dictionary.model_validate(raw)
-
-
-def select_definition(entry: Entry, target_book: int) -> str | None:
-    if entry.first_appears > target_book:
-        return None
-    safe = [d for d in entry.definitions if d.safe_after_book <= target_book]
-    if not safe:
-        return None
-    return safe[-1].text.strip()
 
 
 def build_csv(entries: list[Entry], target_book: int, output_path: Path) -> None:
@@ -45,7 +37,9 @@ def build_csv(entries: list[Entry], target_book: int, output_path: Path) -> None
 def main() -> None:
     parser = argparse.ArgumentParser(description="Bobiverse Dictionary build tool")
     parser.add_argument("--validate-only", action="store_true", help="Validate dictionary.yaml and exit")
-    parser.add_argument("--target-book", metavar="N|all", help="Build CSV for book N (or 'all')")
+    parser.add_argument("--target-book", metavar="N|all", help="Build output for book N (or 'all')")
+    parser.add_argument("--format", choices=["csv", "epub", "both"], default="both",
+                        help="Output format (default: both)")
     args = parser.parse_args()
 
     dict_path = Path(__file__).parent.parent / "dictionary.yaml"
@@ -65,17 +59,26 @@ def main() -> None:
         raw = args.target_book
         if raw == "all":
             target_book = 999
-            output_path = Path(__file__).parent.parent / "dist" / "book-all" / "bobiverse-book-all.csv"
+            dist_dir = Path(__file__).parent.parent / "dist" / "book-all"
+            stem = "bobiverse-book-all"
         else:
             try:
                 target_book = int(raw)
             except ValueError:
                 print(f"Error: --target-book must be an integer or 'all', got {raw!r}", file=sys.stderr)
                 sys.exit(1)
-            output_path = Path(__file__).parent.parent / "dist" / f"book-{raw}" / f"bobiverse-book-{raw}.csv"
+            dist_dir = Path(__file__).parent.parent / "dist" / f"book-{raw}"
+            stem = f"bobiverse-book-{raw}"
 
-        build_csv(dictionary.entries, target_book, output_path)
-        print(f"Wrote {output_path}")
+        fmt = args.format
+        if fmt in ("csv", "both"):
+            csv_path = dist_dir / f"{stem}.csv"
+            build_csv(dictionary.entries, target_book, csv_path)
+            print(f"Wrote {csv_path}")
+        if fmt in ("epub", "both"):
+            epub_path = dist_dir / f"{stem}.epub"
+            build_epub(dictionary.entries, target_book, epub_path)
+            print(f"Wrote {epub_path}")
 
 
 if __name__ == "__main__":

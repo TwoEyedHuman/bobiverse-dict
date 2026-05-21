@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:epub="http://www.idpf.org/2007/ops"
+      epub:type="dictionary"
+      lang="en"
+      xml:lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <title>Bobiverse Dictionary — Book {{ target_book_label }}</title>
+</head>
+<body>
+{% for entry in entries %}
+<article id="entry-{{ loop.index }}" epub:type="dictentry">
+  <dfn epub:type="glossterm">{{ entry.term }}</dfn>
+  <p epub:type="glossdef">{{ entry.definition }}</p>
+</article>
+{% endfor %}
+</body>
+</html>
