@@ -573,7 +573,79 @@ Each story is one Claude session. Keep them tight.
 - [ ] All download links on site resolve correctly
 - [ ] At least one full download tested: file opens correctly in target reader (Boox or Kindle)
 
+---### EPIC 5 — Boox Output Format Correction (StarDict)
+
+**Epic Goal:** Replace the incorrectly scoped EPUB dictionary output with a valid StarDict output. Boox devices require StarDict format (`.ifo` + `.idx` + `.dict.dz`), not EPUB dictionaries. All other outputs (Kindle, CSV) are unaffected.
+
 ---
+
+#### Story 5.1 — Remove EPUB Dictionary Output
+
+**Context:** Story 2.2 produced an EPUB dictionary output intended for Boox, but Boox does not support EPUB dictionaries — it requires StarDict format. The EPUB builder and its templates must be removed cleanly before the StarDict builder is introduced.
+
+**Assumptions:**
+- `scripts/epub_builder.py` and `templates/epub/` exist from Story 2.2
+- `build.py` calls `epub_builder.build_epub()`
+- `tests/test_epub.py` exists
+
+**Tasks:**
+- Delete `scripts/epub_builder.py`
+- Delete `templates/epub/`
+- Remove EPUB output call from `scripts/build.py`
+- Remove EPUB output from `make build-all` target in `Makefile`
+- Delete `tests/test_epub.py`
+- Update `dist/` directory structure in README Repository Structure section to replace `.epub` with `.stardict.zip`
+
+**Out of Scope:** StarDict implementation — that is Story 5.2. Do not begin writing the new builder here.
+
+**Acceptance Criteria:**
+- [ ] `make build-all` completes without error and produces no `.epub` files
+- [ ] `uv run pytest` → all tests pass (no dead imports or references to epub_builder)
+- [ ] `dist/` contains no `.epub` files after a clean build
+- [ ] No references to `epub_builder` remain anywhere in the codebase (`grep -r epub_builder .` → no results)
+
+---
+
+#### Story 5.2 — StarDict Output Builder
+
+**Context:** Story 5.1 complete. EPUB builder removed. Boox requires StarDict format: a ZIP of three files (`.ifo`, `.idx`, `.dict.dz`) placed in `Internal shared storage\dicts` on the device.
+
+**Assumptions:**
+- StarDict spec: `.ifo` is a plain-text metadata header; `.idx` is a binary index of null-terminated headwords each followed by a 4-byte big-endian offset and 4-byte big-endian size; `.dict.dz` is the definition content gzip-compressed
+- No external StarDict library required — format is simple enough to generate with `struct` and `gzip` from stdlib
+- Headwords must be sorted in lexicographic order (required by the StarDict spec)
+
+**Tasks:**
+- `scripts/stardict_builder.py` — `build_stardict(entries, target_book, output_path)`
+  - `generate_ifo(word_count) -> str` — produces valid `.ifo` header
+  - `generate_idx(headwords_with_offsets) -> bytes` — binary index per spec
+  - `generate_dict(definitions) -> bytes` — UTF-8 encoded definitions, gzip-compressed to `.dict.dz`
+  - Bundle all three files into a ZIP at `output_path`
+- Headwords sorted lexicographically before index generation
+- Add StarDict output call to `scripts/build.py` alongside CSV and Kindle
+- Add `make install-boox` target to `Makefile` — copies the correct StarDict ZIP to a user-specified path (`BOOX_PATH`) for manual transfer, with usage: `make install-boox TARGET_BOOK=1 BOOX_PATH=/Volumes/BOOX/dicts`
+- `tests/test_stardict.py` — open generated ZIP, parse `.ifo`, assert word count matches CSV; parse `.idx`, assert headwords are sorted and count matches; assert `.dict.dz` decompresses without error
+
+**Out of Scope:** MDict or Babylon output. Direct USB transfer automation (manual copy is sufficient).
+
+**Acceptance Criteria:**
+- [ ] `uv run python scripts/build.py --target-book 1` → `dist/book-1/bobiverse-book-1.stardict.zip` exists
+- [ ] ZIP contains exactly three files: `.ifo`, `.idx`, `.dict.dz`
+- [ ] `.ifo` word count matches entry count in same-target CSV
+- [ ] `.idx` headwords are in lexicographic order
+- [ ] `.dict.dz` decompresses cleanly (`gzip.decompress()` raises no error)
+- [ ] `uv run pytest tests/test_stardict.py` → all pass
+- [ ] Transfer ZIP to Boox Note 2, unzip into `dicts/` folder, select in Dictionary app → terms resolve correctly on a long-press in NeoReader
+
+---
+
+### EPIC 5 Integration Gate
+
+- [ ] `make build-all` → no `.epub` files anywhere in `dist/`; every book-level directory contains `.stardict.zip`, `.kindle.zip`, and `.csv`
+- [ ] `uv run pytest` → all tests pass
+- [ ] `make clean && make build-all` → reproducible output
+- [ ] StarDict ZIP manually tested on Boox Note 2: long-press a defined term in NeoReader → definition appears
+
 
 ## Publishing
 
