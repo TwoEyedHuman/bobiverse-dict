@@ -1,4 +1,4 @@
-.PHONY: build build-all validate test clean
+.PHONY: build build-all validate manifest test clean
 
 PYTHON := uv run python
 
@@ -10,6 +10,9 @@ build-all:
 
 validate:
 	$(PYTHON) scripts/build.py --validate-only
+
+manifest:
+	$(PYTHON) scripts/build.py --manifest
 
 test:
 	uv run pytest

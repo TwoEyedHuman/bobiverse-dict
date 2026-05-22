@@ -1,11 +1,12 @@
 """Unit tests for select_definition and build_csv."""
 
 import csv
+import json
 import pytest
 from pathlib import Path
 
 from scripts.models import Entry, select_definition
-from scripts.build import build_csv
+from scripts.build import build_csv, build_manifest
 
 
 # ---------------------------------------------------------------------------
@@ -135,3 +136,72 @@ def test_build_csv_all_entries_present(tmp_path):
     build_csv(entries, 999, out)
     rows = list(csv.DictReader(out.open()))
     assert {r["term"] for r in rows} == {"A", "B", "C"}
+
+
+# ---------------------------------------------------------------------------
+# build_manifest
+# ---------------------------------------------------------------------------
+
+def _make_dist(root: Path, book: str, formats: list[str]) -> None:
+    d = root / f"book-{book}"
+    d.mkdir(parents=True, exist_ok=True)
+    for fmt in formats:
+        ext = "kindle.zip" if fmt == "kindle" else fmt
+        (d / f"bobiverse-book-{book}.{ext}").write_bytes(b"x")
+
+
+def test_build_manifest_creates_file(tmp_path):
+    _make_dist(tmp_path, "1", ["epub", "csv"])
+    out = tmp_path / "manifest.json"
+    build_manifest(tmp_path, out)
+    assert out.exists()
+    data = json.loads(out.read_text())
+    assert "generated" in data
+    assert len(data["files"]) == 2
+
+
+def test_build_manifest_all_formats(tmp_path):
+    _make_dist(tmp_path, "1", ["epub", "csv", "kindle"])
+    out = tmp_path / "manifest.json"
+    build_manifest(tmp_path, out)
+    data = json.loads(out.read_text())
+    formats = {e["format"] for e in data["files"]}
+    assert formats == {"epub", "csv", "kindle"}
+
+
+def test_build_manifest_book_types(tmp_path):
+    _make_dist(tmp_path, "1", ["epub"])
+    _make_dist(tmp_path, "all", ["epub"])
+    out = tmp_path / "manifest.json"
+    build_manifest(tmp_path, out)
+    data = json.loads(out.read_text())
+    books = [e["book"] for e in data["files"]]
+    assert books == [1, "all"]
+    assert isinstance(books[0], int)
+    assert isinstance(books[1], str)
+
+
+def test_build_manifest_numeric_books_sorted_before_all(tmp_path):
+    for book in ["all", "2", "1", "3"]:
+        _make_dist(tmp_path, book, ["epub"])
+    out = tmp_path / "manifest.json"
+    build_manifest(tmp_path, out)
+    data = json.loads(out.read_text())
+    books = [e["book"] for e in data["files"]]
+    assert books == [1, 2, 3, "all"]
+
+
+def test_build_manifest_filename_relative(tmp_path):
+    _make_dist(tmp_path, "1", ["epub"])
+    out = tmp_path / "manifest.json"
+    build_manifest(tmp_path, out)
+    data = json.loads(out.read_text())
+    filename = data["files"][0]["filename"]
+    assert filename == "book-1/bobiverse-book-1.epub"
+
+
+def test_build_manifest_empty_dist(tmp_path):
+    out = tmp_path / "manifest.json"
+    build_manifest(tmp_path, out)
+    data = json.loads(out.read_text())
+    assert data["files"] == []

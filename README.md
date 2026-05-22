@@ -575,6 +575,45 @@ Each story is one Claude session. Keep them tight.
 
 ---
 
+## Publishing
+
+### Build
+
+```bash
+make clean && make build-all && make manifest
+```
+
+This produces `dist/` with per-book outputs and `dist/manifest.json` listing every file.
+
+### Deploy to personal site
+
+1. Copy `dist/` contents to `public/bobiverse-dictionary/` on the site:
+
+   ```bash
+   rsync -av dist/ <site-root>/public/bobiverse-dictionary/
+   ```
+
+2. The site reads `manifest.json` at `/bobiverse-dictionary/manifest.json` to render download buttons dynamically. Each entry has `book` (integer or `"all"`), `format` (`epub`, `kindle`, `csv`), and `filename` (relative path from the manifest).
+
+3. The distribution page must display a spoiler warning before any download links.
+
+### Manifest schema
+
+```json
+{
+  "generated": "2026-05-21T12:00:00Z",
+  "files": [
+    { "book": 1, "format": "csv",    "filename": "book-1/bobiverse-book-1.csv" },
+    { "book": 1, "format": "epub",   "filename": "book-1/bobiverse-book-1.epub" },
+    { "book": 1, "format": "kindle", "filename": "book-1/bobiverse-book-1.kindle.zip" },
+    ...
+    { "book": "all", "format": "epub", "filename": "book-all/bobiverse-book-all.epub" }
+  ]
+}
+```
+
+---
+
 ## Definition of Done
 
 A story is complete when:
