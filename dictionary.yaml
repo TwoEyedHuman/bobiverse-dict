@@ -39,6 +39,8 @@ entries:
   - term: "Deltans"
     first_appears: 1
     tags: [alien, faction, character]
+    forms:
+      - Deltan
     definitions:
       - safe_after_book: 1
         text: >
@@ -51,4 +53,3 @@ entries:
       - safe_after_book: 3
         text: >
           Sample 3
-
