@@ -146,12 +146,12 @@ def _make_dist(root: Path, book: str, formats: list[str]) -> None:
     d = root / f"book-{book}"
     d.mkdir(parents=True, exist_ok=True)
     for fmt in formats:
-        ext = "kindle.zip" if fmt == "kindle" else fmt
+        ext = "kindle.zip" if fmt == "kindle" else ("stardict.zip" if fmt == "stardict" else fmt)
         (d / f"bobiverse-book-{book}.{ext}").write_bytes(b"x")
 
 
 def test_build_manifest_creates_file(tmp_path):
-    _make_dist(tmp_path, "1", ["epub", "csv"])
+    _make_dist(tmp_path, "1", ["stardict", "csv"])
     out = tmp_path / "manifest.json"
     build_manifest(tmp_path, out)
     assert out.exists()
@@ -161,17 +161,17 @@ def test_build_manifest_creates_file(tmp_path):
 
 
 def test_build_manifest_all_formats(tmp_path):
-    _make_dist(tmp_path, "1", ["epub", "csv", "kindle"])
+    _make_dist(tmp_path, "1", ["stardict", "csv", "kindle"])
     out = tmp_path / "manifest.json"
     build_manifest(tmp_path, out)
     data = json.loads(out.read_text())
     formats = {e["format"] for e in data["files"]}
-    assert formats == {"epub", "csv", "kindle"}
+    assert formats == {"stardict", "csv", "kindle"}
 
 
 def test_build_manifest_book_types(tmp_path):
-    _make_dist(tmp_path, "1", ["epub"])
-    _make_dist(tmp_path, "all", ["epub"])
+    _make_dist(tmp_path, "1", ["stardict"])
+    _make_dist(tmp_path, "all", ["stardict"])
     out = tmp_path / "manifest.json"
     build_manifest(tmp_path, out)
     data = json.loads(out.read_text())
@@ -183,7 +183,7 @@ def test_build_manifest_book_types(tmp_path):
 
 def test_build_manifest_numeric_books_sorted_before_all(tmp_path):
     for book in ["all", "2", "1", "3"]:
-        _make_dist(tmp_path, book, ["epub"])
+        _make_dist(tmp_path, book, ["stardict"])
     out = tmp_path / "manifest.json"
     build_manifest(tmp_path, out)
     data = json.loads(out.read_text())
@@ -192,12 +192,12 @@ def test_build_manifest_numeric_books_sorted_before_all(tmp_path):
 
 
 def test_build_manifest_filename_relative(tmp_path):
-    _make_dist(tmp_path, "1", ["epub"])
+    _make_dist(tmp_path, "1", ["stardict"])
     out = tmp_path / "manifest.json"
     build_manifest(tmp_path, out)
     data = json.loads(out.read_text())
     filename = data["files"][0]["filename"]
-    assert filename == "book-1/bobiverse-book-1.epub"
+    assert filename == "book-1/bobiverse-book-1.stardict.zip"
 
 
 def test_build_manifest_empty_dist(tmp_path):

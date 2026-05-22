@@ -30,7 +30,7 @@ dictionary.yaml  ←  single source of truth (hand-authored)
       │                                                          │
       ├── dist/book-1/                                           │
       │     ├── bobiverse-book-1.kindle.zip   (Kindle MOBI dict) │
-      │     ├── bobiverse-book-1.epub         (Boox / EPUB dict) │
+      │     ├── bobiverse-book-1.stardict.zip (Boox StarDict)    │
       │     └── bobiverse-book-1.csv                             │
       │                                                          │
       ├── dist/book-2/  (same structure)                         │
@@ -66,13 +66,12 @@ bobiverse-dictionary/
 │   └── find_candidates.py  ← local utility: scans EPUBs, suggests missing terms
 │
 ├── templates/
-│   ├── kindle/              ← Kindle dictionary XML/OPF templates
-│   └── epub/                ← EPUB dictionary content.opf + XHTML templates
+│   └── kindle/              ← Kindle dictionary XML/OPF templates
 │
 ├── dist/                    ← generated; gitignored (or committed if used as release assets)
 │   ├── book-1/
 │   │   ├── bobiverse-book-1.kindle.zip
-│   │   ├── bobiverse-book-1.epub
+│   │   ├── bobiverse-book-1.stardict.zip
 │   │   └── bobiverse-book-1.csv
 │   ├── book-2/
 │   ├── book-3/

@@ -14,7 +14,6 @@ import yaml
 from pydantic import ValidationError
 
 from scripts.models import Dictionary, Entry, select_definition
-from scripts.epub_builder import build_epub
 from scripts.kindle_builder import build_kindle
 
 
@@ -44,8 +43,8 @@ def _parse_dist_file(path: Path, dist_dir: Path) -> dict | None:
     name = path.name
     if name.endswith(".kindle.zip"):
         fmt = "kindle"
-    elif name.endswith(".epub"):
-        fmt = "epub"
+    elif name.endswith(".stardict.zip"):
+        fmt = "stardict"
     elif name.endswith(".csv"):
         fmt = "csv"
     else:
@@ -86,10 +85,6 @@ def build_target(entries: list[Entry], target_book: int, dir_name: str, stem: st
         path = dist_dir / f"{stem}.csv"
         build_csv(entries, target_book, path)
         print(f"Wrote {path}")
-    if fmt in ("epub", "all"):
-        path = dist_dir / f"{stem}.epub"
-        build_epub(entries, target_book, path)
-        print(f"Wrote {path}")
     if fmt in ("kindle", "all"):
         path = dist_dir / f"{stem}.kindle.zip"
         build_kindle(entries, target_book, path)
@@ -101,7 +96,7 @@ def main() -> None:
     parser.add_argument("--validate-only", action="store_true", help="Validate dictionary.yaml and exit")
     parser.add_argument("--target-book", metavar="N|all", help="Build output for book N (or 'all')")
     parser.add_argument("--all", action="store_true", help="Build all book targets (1..max first_appears) plus book-all")
-    parser.add_argument("--format", choices=["csv", "epub", "kindle", "all"], default="all",
+    parser.add_argument("--format", choices=["csv", "kindle", "all"], default="all",
                         help="Output format (default: all)")
     parser.add_argument("--manifest", action="store_true", help="Generate dist/manifest.json from existing dist/ files")
     args = parser.parse_args()
