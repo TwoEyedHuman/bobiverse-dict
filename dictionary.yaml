@@ -10,6 +10,7 @@
 #       definitions:              # at least one element (required)
 #         - safe_after_book: int  # reader finished this book; no spoilers after this point
 #           text: string          # definition shown to reader
+#       forms: [string, ...]      # optional; inflected variants that also map to this entry
 
 entries:
   - term: "GUPPI"
@@ -38,7 +39,7 @@ entries:
 
   - term: "Deltans"
     first_appears: 1
-    tags: [alien, faction, character]
+    tags: [alien, faction]
     forms:
       - Deltan
     definitions:
@@ -49,7 +50,635 @@ entries:
           with developing tool use and proto-language.
       - safe_after_book: 2
         text: >
-          Sample 2
+          A pre-technological humanoid species native to Delta Eridani 4.
+          By book 2 they have begun developing rudimentary language and
+          using simple tools. Bob replicants continue to observe them
+          from a distance, debating how much intervention is ethical.
       - safe_after_book: 3
         text: >
-          Sample 3
+          A pre-technological humanoid species native to Delta Eridani 4.
+          Their society continues to develop under distant Bob supervision.
+          They face environmental pressures and begin to demonstrate the
+          rudiments of cultural transmission across generations.
+
+  - term: "autofactory"
+    first_appears: 1
+    tags: [technology]
+    forms:
+      - autofactories
+      - autofactorie
+    definitions:
+      - safe_after_book: 1
+        text: >
+          A self-replicating automated manufacturing facility constructed
+          by Bob replicants. Autofactories can produce components,
+          equipment, and copies of themselves, enabling rapid industrial
+          expansion across star systems without human labor.
+      - safe_after_book: 2
+        text: >
+          A self-replicating automated manufacturing facility. By book 2,
+          Bobs have seeded autofactories across multiple star systems,
+          creating interstellar industrial networks that underpin
+          colonization support and defense against the Others.
+
+  - term: "holotank"
+    first_appears: 1
+    tags: [technology]
+    definitions:
+      - safe_after_book: 1
+        text: >
+          A holographic 3D display unit in a Bob replicant's virtual
+          reality environment. Used to visualize star charts, sensor
+          data, tactical overlays, and system models. Bobs can reach
+          into the display and manipulate objects directly.
+
+  - term: "BobNet"
+    first_appears: 1
+    tags: [technology, concept]
+    definitions:
+      - safe_after_book: 1
+        text: >
+          The informal communication and data-sharing network linking
+          Bob replicants across explored space. Limited by the speed of
+          light, messages may take years to arrive across interstellar
+          distances.
+      - safe_after_book: 2
+        text: >
+          The communication and data-sharing network linking Bob
+          replicants. With the introduction of SCUT technology, latency
+          drops dramatically, allowing near-real-time coordination
+          between Bobs regardless of distance.
+
+  - term: "bawbe"
+    first_appears: 1
+    tags: [alien, concept]
+    definitions:
+      - safe_after_book: 1
+        text: >
+          The Deltan name for Bob, derived from their approximation of
+          the sound "Bob." The Deltans use it to refer to any visiting
+          Bob replicant, eventually treating it as a title for
+          sky-people in general.
+
+  - term: "Roamer"
+    first_appears: 1
+    tags: [faction, character]
+    forms:
+      - Roamers
+    definitions:
+      - safe_after_book: 1
+        text: >
+          A member of the nomadic human communities that rejected life
+          under the theocratic and authoritarian governments that took
+          over Earth. Roamers travel in caravans or fleets, trading and
+          surviving outside settled political structures.
+      - safe_after_book: 2
+        text: >
+          Nomadic humans who rejected authoritarian Earth governments.
+          By book 2, Roamer communities are well established across
+          multiple settled regions and have become a significant
+          independent human faction with their own culture and
+          governance.
+
+  - term: "earthside"
+    first_appears: 1
+    tags: [concept, location]
+    definitions:
+      - safe_after_book: 1
+        text: >
+          Relating to or originating from Earth, as opposed to space
+          or off-world locations. Used by replicants and spacers to
+          distinguish Earth-based events and politics from the wider
+          interstellar context.
+
+  - term: "groundside"
+    first_appears: 1
+    tags: [concept, location]
+    definitions:
+      - safe_after_book: 1
+        text: >
+          On or relating to a planetary surface, as opposed to orbit
+          or deep space. Used to describe surface-based operations,
+          habitats, or personnel.
+
+  - term: "spaceside"
+    first_appears: 1
+    tags: [concept, location]
+    definitions:
+      - safe_after_book: 1
+        text: >
+          In or relating to space, as opposed to a planetary surface.
+          Used to distinguish orbital and interstellar operations from
+          groundside activities.
+
+  - term: "bobiverse"
+    first_appears: 1
+    tags: [concept, faction]
+    definitions:
+      - safe_after_book: 1
+        text: >
+          The informal collective name for the growing civilization of
+          Bob replicants and their sphere of influence. Coined by the
+          Bobs themselves to describe their distributed, self-replicating
+          interstellar community.
+      - safe_after_book: 2
+        text: >
+          The collective civilization of Bob replicants. By book 2 it
+          spans multiple star systems with thousands of Bobs, each
+          pursuing individual interests while contributing to shared
+          goals such as colonization support and defense against the
+          Others.
+
+  - term: "KKP"
+    first_appears: 1
+    tags: [weapon, acronym]
+    definitions:
+      - safe_after_book: 1
+        text: >
+          Kinetic Kill Projectile. A high-mass, high-velocity impactor
+          used as a ship-to-ship or surface-bombardment weapon. Delivers
+          devastating kinetic energy without requiring explosives.
+
+  - term: "reactionless"
+    first_appears: 1
+    tags: [technology]
+    definitions:
+      - safe_after_book: 1
+        text: >
+          Describing the drive technology used by Bob replicant ships.
+          A reactionless drive produces thrust without expelling propellant
+          mass, enabling high delta-v maneuvers without carrying large
+          fuel reserves.
+
+  - term: "Cryoeterna"
+    first_appears: 1
+    tags: [faction]
+    definitions:
+      - safe_after_book: 1
+        text: >
+          The cryonics company that preserved Bob Johansson's body and
+          neural pattern after his death. The contract Bob signed with
+          Cryoeterna included legal clauses that gave the government
+          rights to use his neural map for the Heaven probe program.
+
+  - term: "Terasoft"
+    first_appears: 1
+    tags: [faction]
+    definitions:
+      - safe_after_book: 1
+        text: >
+          A technology company mentioned in the context of pre-upload
+          corporate culture. Referenced as part of the world Bob
+          Johansson inhabited before his death and replication.
+
+  - term: "Jeeves"
+    first_appears: 1
+    tags: [character, replicant, ai]
+    forms:
+      - jeeve
+      - jeeveses
+    definitions:
+      - safe_after_book: 1
+        text: >
+          A Bob replicant known for a formal, butler-like persona.
+          The name alludes to P.G. Wodehouse's famously capable fictional
+          valet. Also used informally for any particularly deferential
+          or competent AI assistant variant.
+
+  - term: "gorilloid"
+    first_appears: 2
+    tags: [alien]
+    forms:
+      - gorilloids
+    definitions:
+      - safe_after_book: 2
+        text: >
+          Informal term for the Others, the alien species first
+          encountered near the Pavonis system. Large, bipedal, and
+          gorilla-like in appearance, they are aggressive and
+          expansionist, methodically driving other species from
+          habitable worlds they want for themselves.
+      - safe_after_book: 3
+        text: >
+          Informal term for the Others. After extended conflict with Bob
+          replicants and allied species, the gorilloids' drive to
+          displace other civilizations becomes the central military and
+          ethical challenge of the wider interstellar community.
+
+  - term: "Pavonis"
+    first_appears: 2
+    tags: [location]
+    definitions:
+      - safe_after_book: 2
+        text: >
+          The Epsilon Eridani system and home of the Pav, a sapient
+          avian species. Bob replicants arrive to find the Pav under
+          existential threat from the gorilloid Others.
+      - safe_after_book: 3
+        text: >
+          The Epsilon Eridani system. After the Others' assault
+          intensifies, Bob replicants coordinate a large-scale
+          evacuation of the Pav from their homeworld.
+
+  - term: "suddar"
+    first_appears: 2
+    tags: [alien, concept]
+    forms:
+      - suddars
+    definitions:
+      - safe_after_book: 2
+        text: >
+          A term from the Pav language; used as the Pav name or title
+          for Bob and the replicants who aid them. Carries connotations
+          of trusted outsider or powerful ally.
+      - safe_after_book: 3
+        text: >
+          A Pav honorific for Bob replicants. Over time the term evolves
+          from a label for an unknown sky-being to a respected title
+          for the Bobs who stood with the Pav against the Others.
+
+  - term: "Medeiros"
+    first_appears: 1
+    tags: [faction, replicant]
+    forms:
+      - medeiro
+    definitions:
+      - safe_after_book: 1
+        text: >
+          The lineage of replicants derived from the Brazilian Heaven
+          probe program. Aggressively competitive, Medeiros-line
+          replicants frequently come into conflict with Bob-lineage
+          replicants over resources and territory.
+      - safe_after_book: 2
+        text: >
+          The Brazilian replicant lineage. By book 2 the conflict with
+          Medeiros-line replicants has escalated; they are directly
+          responsible for the deaths of several Bobs, including Milo,
+          during the Pav evacuation.
+
+  - term: "SCUT"
+    first_appears: 2
+    tags: [technology, acronym]
+    forms:
+      - scuts
+    definitions:
+      - safe_after_book: 2
+        text: >
+          Subspace Communication Universal Transceiver. A faster-than-light
+          communication device that allows near-instantaneous messaging
+          between Bob replicants regardless of interstellar distance.
+          A transformative technology that fundamentally changes Bob
+          coordination and strategy.
+      - safe_after_book: 3
+        text: >
+          Subspace Communication Universal Transceiver. By book 3,
+          SCUT networks are widely deployed across Bob-controlled
+          systems, enabling real-time coordination during the
+          multi-system conflict with the Others.
+
+  - term: "denu"
+    first_appears: 2
+    tags: [alien, concept]
+    definitions:
+      - safe_after_book: 2
+        text: >
+          A term from the Pav language. Used in Pav social and
+          ceremonial contexts encountered by Bob replicants during
+          their time in the Pavonis system.
+
+  - term: "onagi"
+    first_appears: 2
+    tags: [alien, concept]
+    definitions:
+      - safe_after_book: 2
+        text: >
+          An alien-language term encountered in the Bobiverse series,
+          used in the context of one of the sapient species Bob
+          replicants make contact with during exploration.
+
+  - term: "hazjiar"
+    first_appears: 2
+    tags: [alien, concept]
+    definitions:
+      - safe_after_book: 2
+        text: >
+          A term from the Pav language, used frequently in dialogue
+          between Pav characters. Likely a title, role, or social
+          concept significant in Pav culture.
+
+  - term: "medeiri"
+    first_appears: 2
+    tags: [alien, concept]
+    definitions:
+      - safe_after_book: 2
+        text: >
+          A Pav-language term, possibly the Pav name or rendering of
+          the Medeiros replicant lineage. Appears in Pav dialogue
+          involving interactions with or references to Medeiros-line
+          probes.
+
+  - term: "blaihin"
+    first_appears: 2
+    tags: [alien, concept]
+    definitions:
+      - safe_after_book: 2
+        text: >
+          An alien-language term from the Bobiverse series, used in
+          dialogues set in the Pavonis system. Likely a Pav word
+          describing a role, concept, or category in their society.
+
+  - term: "Archimedes"
+    first_appears: 1
+    tags: [character, replicant]
+    forms:
+      - archimede
+    definitions:
+      - safe_after_book: 1
+        text: >
+          A Bob replicant named after the ancient Greek mathematician.
+          One of many Bobs pursuing exploration and colonization goals
+          across different star systems.
+      - safe_after_book: 4
+        text: >
+          A Bob replicant who enters the Heaven's River megastructure
+          built by the Quinlan aliens. His disappearance inside the
+          structure becomes the central mystery driving the events of
+          book 4.
+
+  - term: "Ragnarök"
+    first_appears: 3
+    tags: [concept, ship]
+    definitions:
+      - safe_after_book: 3
+        text: >
+          A name used in the Bobiverse series for a Bob replicant, ship,
+          or planned large-scale military action. Invokes the Norse
+          mythological concept of a catastrophic final battle.
+
+  - term: "Eridani"
+    first_appears: 1
+    tags: [location]
+    definitions:
+      - safe_after_book: 1
+        text: >
+          Shorthand for the Eridani star systems significant in the
+          Bobiverse series: Delta Eridani, home of the Deltans; and
+          Epsilon Eridani (Pavonis), home of the Pav. Both are early
+          targets of Bob replicant exploration.
+
+  - term: "Hydri"
+    first_appears: 1
+    tags: [location]
+    definitions:
+      - safe_after_book: 1
+        text: >
+          Shorthand for Beta Hydri, a star system explored by Bob
+          replicants. One of many solar-type stars surveyed for
+          habitable planets and colonization potential.
+
+  - term: "Tucanae"
+    first_appears: 2
+    tags: [location]
+    definitions:
+      - safe_after_book: 2
+        text: >
+          Reference to 47 Tucanae, a globular star cluster considered
+          by Bob replicants as they expand their survey range and
+          long-term exploration targets.
+
+  - term: "busterize"
+    first_appears: 2
+    tags: [concept]
+    forms:
+      - busterized
+    definitions:
+      - safe_after_book: 2
+        text: >
+          Bob-coined verb meaning to destroy utterly, derived from the
+          Buster missiles used by replicants as heavy ordnance.
+          "Busterize" implies overwhelming destruction, typically applied
+          to enemy ships, facilities, or threats.
+
+  - term: "crewcritter"
+    first_appears: 2
+    tags: [concept, alien]
+    forms:
+      - crewcritters
+    definitions:
+      - safe_after_book: 2
+        text: >
+          Bob replicant informal term for a non-human sapient companion
+          or crew member aboard a ship. Affectionately used to refer to
+          alien friends or allies who travel with or assist the Bobs.
+
+  - term: "dimosaur"
+    first_appears: 2
+    tags: [alien]
+    forms:
+      - dimosaurs
+    definitions:
+      - safe_after_book: 2
+        text: >
+          A large dinosaur-like creature encountered on a planet explored
+          by Bob replicants. The informal name reflects the creature's
+          resemblance to Earth's prehistoric dinosaurs.
+
+  - term: "pigoid"
+    first_appears: 2
+    tags: [alien]
+    forms:
+      - pigoids
+    definitions:
+      - safe_after_book: 2
+        text: >
+          A pig-like alien species encountered by Bob replicants during
+          exploration. The name is descriptive of the creature's
+          physical resemblance to Earth pigs.
+
+  - term: "brontos"
+    first_appears: 2
+    tags: [alien]
+    definitions:
+      - safe_after_book: 2
+        text: >
+          Large, long-necked creatures resembling Earth's sauropod
+          dinosaurs, encountered on a planet Bob replicants explore.
+          Named informally for their brontosaurus-like appearance.
+
+  - term: "ickie"
+    first_appears: 2
+    tags: [concept]
+    forms:
+      - ickies
+    definitions:
+      - safe_after_book: 2
+        text: >
+          Bob replicant slang for something unpleasant, dangerous, or
+          hostile — often applied to enemy creatures or threats.
+
+  - term: "Bobbian"
+    first_appears: 1
+    tags: [concept]
+    definitions:
+      - safe_after_book: 1
+        text: >
+          Of or relating to the Bob replicants and their civilization.
+          Used as an adjective to describe culture, technology, or
+          values characteristic of the bobiverse.
+
+  - term: "Worldbuilders"
+    first_appears: 2
+    tags: [faction, concept]
+    definitions:
+      - safe_after_book: 2
+        text: >
+          A term for groups or activities involved in large-scale
+          planetary engineering and terraforming efforts. Associated
+          with the long-term colonization work undertaken by Bob
+          replicants and their human partners.
+
+  - term: "Handeltown"
+    first_appears: 4
+    tags: [location]
+    definitions:
+      - safe_after_book: 4
+        text: >
+          A settlement within or near Heaven's River, the megastructure
+          built by the Quinlan species. Encountered by Bob replicants
+          exploring the interior of the structure in book 4.
+
+  - term: "megatonnage"
+    first_appears: 2
+    tags: [concept, weapon]
+    definitions:
+      - safe_after_book: 2
+        text: >
+          The total explosive yield of a weapon or arsenal measured in
+          megatons. Used when discussing the scale of kinetic or nuclear
+          weapons employed in large ship-to-ship engagements.
+
+  - term: "statcom"
+    first_appears: 1
+    tags: [technology, acronym]
+    definitions:
+      - safe_after_book: 1
+        text: >
+          A status and communications system used aboard Bob replicant
+          ships. Provides real-time status monitoring and ship-to-ship
+          communication functions.
+
+  - term: "ramscoop"
+    first_appears: 2
+    tags: [technology, ship]
+    definitions:
+      - safe_after_book: 2
+        text: >
+          A Bussard ramscoop — a large electromagnetic funnel used to
+          collect interstellar hydrogen for use as fuel. Discussed as
+          a potential long-range propulsion technology in the context
+          of deep interstellar voyages.
+
+  - term: "Jovians"
+    first_appears: 1
+    tags: [alien, concept]
+    definitions:
+      - safe_after_book: 1
+        text: >
+          Beings or creatures associated with gas giant planets. In the
+          Bobiverse series, used to describe potential life forms
+          in the atmospheres of Jupiter-like planets encountered
+          during exploration.
+
+  - term: "kuzzi"
+    first_appears: 2
+    tags: [alien, concept]
+    definitions:
+      - safe_after_book: 2
+        text: >
+          An alien-language term or creature name encountered in the
+          Bobiverse series, appearing in scenes involving non-human
+          species or environments.
+
+  - term: "nastie"
+    first_appears: 2
+    tags: [concept, alien]
+    forms:
+      - nasties
+    definitions:
+      - safe_after_book: 2
+        text: >
+          Bob replicant slang for hostile creatures, enemy forces, or
+          anything threatening. Plural "nasties" used to describe
+          groups of enemies — alien predators, hostile probes, or
+          Other-aligned forces.
+
+  - term: "kiroshi"
+    first_appears: 2
+    tags: [character, alien]
+    definitions:
+      - safe_after_book: 2
+        text: >
+          A name or term encountered in the Bobiverse series, associated
+          with alien characters or cultures the Bobs interact with during
+          exploration.
+
+  - term: "Takama"
+    first_appears: 2
+    tags: [character, alien]
+    definitions:
+      - safe_after_book: 2
+        text: >
+          A character encountered by the Bob replicants, likely a member
+          of one of the alien species. Associated with the mid-series
+          storylines involving alien contact and diplomacy.
+
+  - term: "amhor"
+    first_appears: 3
+    tags: [character, alien]
+    definitions:
+      - safe_after_book: 3
+        text: >
+          An alien name or term from the later Bobiverse books, appearing
+          in scenes involving new species or contacts made by Bob
+          replicants in their expanding exploration.
+
+  - term: "Sideria"
+    first_appears: 2
+    tags: [location]
+    definitions:
+      - safe_after_book: 2
+        text: >
+          A location in the Bobiverse series, likely a planet, station,
+          or region encountered by Bob replicants during their
+          interstellar travels.
+
+  - term: "Caerleons"
+    first_appears: 3
+    tags: [location, faction]
+    definitions:
+      - safe_after_book: 3
+        text: >
+          A settlement or community in the later Bobiverse books, the
+          name carrying an Arthurian allusion (Caerleon was a seat of
+          King Arthur's court in Welsh tradition).
+
+  - term: "Reeda"
+    first_appears: 2
+    tags: [character, alien]
+    definitions:
+      - safe_after_book: 2
+        text: >
+          A character in the Bobiverse series, likely an alien individual
+          the Bobs encounter during contact with one of the sapient
+          species across explored space.
+
+  - term: "cabrão"
+    first_appears: 1
+    tags: [concept]
+    definitions:
+      - safe_after_book: 1
+        text: >
+          A Portuguese profanity (roughly "bastard" or "jerk") used
+          by Medeiros-lineage replicants, reflecting their Brazilian
+          cultural origin. Often heard in tense encounters between
+          Bob-lineage and Medeiros-lineage probes.
