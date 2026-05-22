@@ -15,6 +15,7 @@ from pydantic import ValidationError
 
 from scripts.models import Dictionary, Entry, select_definition
 from scripts.kindle_builder import build_kindle
+from scripts.stardict_builder import build_stardict
 
 
 def load_dictionary(path: Path) -> Dictionary:
@@ -89,6 +90,10 @@ def build_target(entries: list[Entry], target_book: int, dir_name: str, stem: st
         path = dist_dir / f"{stem}.kindle.zip"
         build_kindle(entries, target_book, path)
         print(f"Wrote {path}")
+    if fmt in ("stardict", "all"):
+        path = dist_dir / f"{stem}.stardict.zip"
+        build_stardict(entries, target_book, path)
+        print(f"Wrote {path}")
 
 
 def main() -> None:
@@ -96,7 +101,7 @@ def main() -> None:
     parser.add_argument("--validate-only", action="store_true", help="Validate dictionary.yaml and exit")
     parser.add_argument("--target-book", metavar="N|all", help="Build output for book N (or 'all')")
     parser.add_argument("--all", action="store_true", help="Build all book targets (1..max first_appears) plus book-all")
-    parser.add_argument("--format", choices=["csv", "kindle", "all"], default="all",
+    parser.add_argument("--format", choices=["csv", "kindle", "stardict", "all"], default="all",
                         help="Output format (default: all)")
     parser.add_argument("--manifest", action="store_true", help="Generate dist/manifest.json from existing dist/ files")
     args = parser.parse_args()
